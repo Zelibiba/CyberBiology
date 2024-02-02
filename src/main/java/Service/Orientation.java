@@ -54,7 +54,7 @@ public enum Orientation {
     }
 
     /**
-     * Возвращает оринтацию, соответствующую углу.
+     * Возвращает ориентацию, соответствующую углу.
      */
     public static Orientation getOrientation(int angle) {
         return MASSIVE[angle % SIZE];

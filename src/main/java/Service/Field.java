@@ -24,7 +24,7 @@ public class Field {
         for (int i = 0; i < 10; i++) {
             int row = rand.nextInt(HEIGHT);
             int column = rand.nextInt(WIDTH);
-            Bot bot = new Bot(row, column, 50, true);
+            Bot bot = new Bot(row, column, 50, null);
             setCell(bot);
             bots.add(bot);
         }
@@ -59,6 +59,13 @@ public class Field {
      */
     public static void setCell(Cell cell) {
         field[cell.row][cell.column] = cell;
+    }
+
+    /**
+     * Замещает данную клетку пустой клеткой.
+     */
+    public static void setEmptyCell(Cell cell){
+        setCell(new Cell(cell.row, cell.column));
     }
 
     /**
