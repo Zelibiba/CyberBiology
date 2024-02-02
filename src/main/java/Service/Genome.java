@@ -21,9 +21,13 @@ public class Genome {
     private static final int MUTATION_CHANCE = 50;
 
     public Genome() {
+        Random rand=new Random();
         massive = new byte[SIZE];
         for (int i = 0; i < SIZE; i++)
-            massive[i] = 0;
+            massive[i] = (byte)rand.nextInt(MAX_GENE+1);
+
+        for(int i=0;i<massive.length/4;i++)
+            massive[rand.nextInt(SIZE)]=0;
     }
 
     /**

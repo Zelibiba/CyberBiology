@@ -1,5 +1,7 @@
 package Service;
 
+import javafx.scene.paint.Color;
+
 import java.util.Arrays;
 import java.util.Random;
 
@@ -32,20 +34,30 @@ public class Bot extends Cell {
      */
     public Bot(int row, int column, int energy, Genome genome) {
         super(row, column);
+        color=Color.GREEN;
         this.energy = energy;
         this.isAlive = true;
         orientation = Orientation.randomize();
         this.genome = (genome == null) ? new Genome() : new Genome(genome, true);
     }
 
+    private Color color;
+    public Color getColor() {
+        return color;
+    }
+
     /**
      * Ориентация бота.
      */
     private Orientation orientation;
+    public Orientation getOrientation(){
+        return orientation;
+    }
     /**
      * Энергия бота.
      */
     private int energy;
+    public int getEnergy(){return energy;}
     /**
      * Флаг того, что бот жив и может что-то сделать.
      */
@@ -80,12 +92,13 @@ public class Bot extends Cell {
     }
 
     /**
-     * Метод убивает бота, уменьшает его энергию и удаляет из списка ботов {@link Field#bots}.
+     * Метод убивает бота, уменьшает его энергию и удаляет из списка ботов.
      */
     private void die() {
         isAlive = false;
+        color=Color.GRAY;
         Field.getBots().remove(this);
-        energy = energy / 2 + 1;
+        energy = energy / 4 + 1;
     }
 
     /**
@@ -94,6 +107,7 @@ public class Bot extends Cell {
      * @return false - конец цикла.
      */
     private boolean photosynthesize() {
+        color=Color.GREEN;
         energy += Field.getSun(row);
         genome.addToPointer(1);
         return false;
@@ -109,6 +123,7 @@ public class Bot extends Cell {
         Orientation direction = orientation.spin(value);
         int delta = reactAtAhead(direction);
         if (delta >= 4) {
+            color=Color.RED;
             Bot food = (Bot) Field.getAheadCell(row, column, direction);
             Field.setEmptyCell(food);
             if (food.isAlive)
@@ -203,9 +218,12 @@ public class Bot extends Cell {
     }
 
     /**
-     * Метод выполняет ход бота.
+     * Метод выполняет ход бота, если он жив.
      */
     public void doAction() {
+        if(!isAlive)
+            return;
+
         energy -= ENERGY_DRAIN;
         if (energy >= MAX_ENERGY) {
             energy -= ENERGY_DRAIN;
@@ -223,6 +241,10 @@ public class Bot extends Cell {
                 case 68 -> move();
                 default -> defaultCommand();
             };
+        }
+        if(energy<=0) {
+            energy=20;
+            die();
         }
     }
 }

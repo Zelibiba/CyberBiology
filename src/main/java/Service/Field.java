@@ -14,20 +14,37 @@ public class Field {
     /**
      * Ширина поля.
      */
-    private static final int WIDTH = 40;
+    private static final int WIDTH = 80;
 
     /**
      * Инициальзирует ботов на поле.
      */
-    public static void initialize() {
+    public static void initialize(int count) {
+        for(int r=0;r<HEIGHT;r++){
+            for(int c=0;c<WIDTH;c++)
+                field[r][c]=new Cell(r,c);
+        }
+        bots.clear();
         Random rand = new Random();
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < count; i++) {
             int row = rand.nextInt(HEIGHT);
             int column = rand.nextInt(WIDTH);
             Bot bot = new Bot(row, column, 50, null);
             setCell(bot);
             bots.add(bot);
         }
+    }
+    public static void iterate(){
+        Bot[] cBots=bots.toArray(Bot[]::new);
+        for(Bot bot : cBots)
+            bot.doAction();
+    }
+
+    public static int getHeight(){
+        return HEIGHT;
+    }
+    public static int getWidth(){
+        return WIDTH;
     }
 
     /**
@@ -90,7 +107,7 @@ public class Field {
             int[] coord = direction.getDirection();
             int r = row + coord[0];
             int c = column + coord[1];
-            if ((row >= 0) && (row < HEIGHT))
+            if ((r >= 0) && (r < HEIGHT))
                 cells.add(getCell(r, c));
         }
         return cells.toArray(Cell[]::new);
@@ -114,6 +131,6 @@ public class Field {
      * @return Количество солнесной энергии на уровне.
      */
     public static int getSun(int row) {
-        return 10;
+        return 6;
     }
 }
