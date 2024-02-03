@@ -96,6 +96,7 @@ public class Bot extends Cell {
      */
     private void die() {
         isAlive = false;
+        needToUpdate=true;
         color=Color.GRAY;
         Field.getBots().remove(this);
         energy = energy / 4 + 1;
@@ -108,6 +109,7 @@ public class Bot extends Cell {
      */
     private boolean photosynthesize() {
         color=Color.GREEN;
+        needToUpdate=true;
         energy += Field.getSun(row);
         genome.addToPointer(1);
         return false;
@@ -129,6 +131,7 @@ public class Bot extends Cell {
             if (food.isAlive)
                 food.die();
             energy += food.energy;
+            needToUpdate=true;
         }
         genome.addToPointer(delta);
         return false;
@@ -160,6 +163,7 @@ public class Bot extends Cell {
         else
             orientation = Orientation.getOrientation(value);
         genome.addToPointer(2);
+        needToUpdate=true;
         return true;
     }
 
@@ -208,6 +212,7 @@ public class Bot extends Cell {
         Random rand = new Random();
         Cell cell = cells[rand.nextInt(cells.length)];
         energy /= 2;
+        needToUpdate=true;
         Bot child = new Bot(cell.row, cell.column, energy, genome);
         Field.setCell(child);
 
@@ -221,9 +226,12 @@ public class Bot extends Cell {
      * Метод выполняет ход бота, если он жив.
      */
     public void doAction() {
-        if(!isAlive)
+        if(!isAlive) {
+            needToUpdate=false;
             return;
+        }
 
+        needToUpdate=true;
         energy -= ENERGY_DRAIN;
         if (energy >= MAX_ENERGY) {
             energy -= ENERGY_DRAIN;

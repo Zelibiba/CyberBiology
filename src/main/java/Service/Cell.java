@@ -17,4 +17,11 @@ public class Cell {
      * Столбик клетки.
      */
     protected int column;
+    protected boolean needToUpdate=true;
+    public boolean getNeedToUpdate(){
+        return needToUpdate;
+    }
+    public void setNeedToUpdate(boolean value){
+        needToUpdate=value;
+    }
 }

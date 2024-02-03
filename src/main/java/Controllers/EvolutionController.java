@@ -2,11 +2,13 @@ package Controllers;
 
 import Service.Bot;
 import Service.Field;
+import Service.MyTask;
 import Service.Orientation;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
@@ -36,8 +38,8 @@ public class EvolutionController {
         draw();
     }
 
-    private Thread thread;
-    private int count=0;
+
+    private MyTask task;
     @FXML
     protected void onClearClick(){
         Field.initialize(0);
@@ -45,43 +47,48 @@ public class EvolutionController {
     }
     @FXML
     protected void OnStartClick() {
-        thread=new Thread(() -> {
-            while (!Thread.currentThread().isInterrupted()) {
+        task=new MyTask();
+        task.valueProperty().addListener(new ChangeListener<Integer>() {
+            @Override
+            public void changed(ObservableValue<? extends Integer> observableValue, Integer integer, Integer t1) {
+                System.out.print(t1+": ");
                 Field.iterate();
                 draw();
-                count++;
-                System.out.println(count);
-                try {
-                    Thread.sleep(200);
-                } catch (InterruptedException ignored) {
-                    break;
-                }
             }
         });
+        Thread thread=new Thread(task);
+        thread.setDaemon(true);
         thread.start();
     }
     @FXML
     protected void onStopClick(){
-        thread.interrupt();
+        task.cancel();
     }
 
     private void draw(){
-        gc.clearRect(0,0,canvas.getWidth(),canvas.getHeight());
+        gc=canvas.getGraphicsContext2D();
         var field=Field.getField();
         int height= Field.getHeight();
         int width=Field.getWidth();
+        int count =0;
         for(int r=0;r<height;r++){
             for(int c=0;c<width;c++){
-                if(field[r][c] instanceof Bot bot){
-                    gc.setFill(bot.getColor());
-                    gc.fillRect(c*SCALE, r*SCALE,SCALE,SCALE);
-                    drawOrientation(r,c,bot.getOrientation());
-                    gc.setFill(Color.BLACK);
-                    gc.strokeText(""+bot.getEnergy(),(c+0.2)*SCALE,(r+0.8)*SCALE);
-
+                if(field[r][c].getNeedToUpdate()) {
+                    count++;
+                    field[r][c].setNeedToUpdate(false);
+                    if (field[r][c] instanceof Bot bot) {
+                        gc.setFill(bot.getColor());
+                        gc.fillRect(c * SCALE, r * SCALE, SCALE, SCALE);
+                        drawOrientation(r, c, bot.getOrientation());
+                        gc.setFill(Color.BLACK);
+                        gc.strokeText("" + bot.getEnergy(), (c + 0.2) * SCALE, (r + 0.8) * SCALE);
+                    }
+                    else
+                        gc.clearRect(c * SCALE, r * SCALE, SCALE, SCALE);
                 }
             }
         }
+        System.out.println(count);
     }
     private void drawOrientation(int row, int column, Orientation orientation) {
         double[] start = new double[]{
