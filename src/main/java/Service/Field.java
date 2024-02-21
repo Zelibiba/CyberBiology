@@ -10,11 +10,11 @@ public class Field {
     /**
      * Высота поля.
      */
-    private static final int HEIGHT = 40;
+    private static final int HEIGHT = 120;
     /**
      * Ширина поля.
      */
-    private static final int WIDTH = 80;
+    private static final int WIDTH = 400;
 
     /**
      * Инициальзирует ботов на поле.
@@ -33,12 +33,15 @@ public class Field {
             setCell(bot);
             bots.add(bot);
         }
+        random=new Random();
     }
-    public static void iterate(){
+    public static int iterate(){
         Bot[] cBots=bots.toArray(Bot[]::new);
         for(Bot bot : cBots)
             bot.doAction();
+        return ++iteration;
     }
+    private static int iteration=0;
 
     public static int getHeight(){
         return HEIGHT;
@@ -126,11 +129,13 @@ public class Field {
         return getCell(r, c);
     }
 
+
+    private static Random random;
     /**
      * @param row Уровень.
      * @return Количество солнесной энергии на уровне.
      */
     public static int getSun(int row) {
-        return 6;
+        return random.nextInt(4,8+1);
     }
 }

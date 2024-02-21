@@ -18,7 +18,7 @@ public class Genome {
     /**
      * Шанс мутирования при копировании генома.
      */
-    private static final int MUTATION_CHANCE = 50;
+    private static final int MUTATION_CHANCE = 25;
 
     public Genome() {
         Random rand=new Random();

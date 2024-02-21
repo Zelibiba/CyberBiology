@@ -13,7 +13,7 @@ public class Bot extends Cell {
     /**
      * Максимум энергии, накапливаемой ботом.
      */
-    private static final int MAX_ENERGY = 100;
+    private static final int MAX_ENERGY = 200;
     /**
      * Трата энергии за ход.
      */
@@ -34,7 +34,7 @@ public class Bot extends Cell {
      */
     public Bot(int row, int column, int energy, Genome genome) {
         super(row, column);
-        color=Color.GREEN;
+        color=Color.color(0,0.5,0);
         this.energy = energy;
         this.isAlive = true;
         orientation = Orientation.randomize();
@@ -62,11 +62,27 @@ public class Bot extends Cell {
      * Флаг того, что бот жив и может что-то сделать.
      */
     private boolean isAlive;
+    public boolean getIsAlive(){
+        return isAlive;
+    }
     /**
      * Геном бота.
      */
     private final Genome genome;
 
+    private void changeColor(boolean organic){
+        double red=color.getRed();
+        double green=color.getGreen();
+        if(organic) {
+            red=Math.min(red+0.25,0.5);
+            green=Math.max(green-0.25,0);
+        }
+        else{
+            red=Math.max(red-0.25,0);
+            green=Math.min(green+0.25,0.5);
+        }
+        color=Color.color(red,green,0);
+    }
     /**
      * Метод реагирует на то, что находится в определённом направлении от бота.
      *
@@ -99,7 +115,31 @@ public class Bot extends Cell {
         needToUpdate=true;
         color=Color.GRAY;
         Field.getBots().remove(this);
-        energy = energy / 4 + 1;
+        energy = Math.min(MAX_ENERGY, energy) / 8;
+    }
+
+    /**
+     * Метод отпочковывает нового бота рядом, если возможно. Иначе - бот умирает.
+     */
+    private void gemmate() {
+        Cell[] cells = Field.getAdjacentCells(row, column);
+        cells = Arrays.stream(cells).filter(cell -> !(cell instanceof Bot)).toArray(Cell[]::new);
+        if (cells.length == 0) {
+            die();
+            return;
+        }
+
+        Random rand = new Random();
+        Cell cell = cells[rand.nextInt(cells.length)];
+        energy /= 2;
+        needToUpdate=true;
+        Bot child = new Bot(cell.row, cell.column, energy, genome);
+        Field.setCell(child);
+
+        var bots = Field.getBots();
+        int index = bots.indexOf(this) - 1;
+        index = Math.max(index, 0);
+        bots.add(index, child);
     }
 
     /**
@@ -108,7 +148,7 @@ public class Bot extends Cell {
      * @return false - конец цикла.
      */
     private boolean photosynthesize() {
-        color=Color.GREEN;
+        changeColor(false);
         needToUpdate=true;
         energy += Field.getSun(row);
         genome.addToPointer(1);
@@ -125,7 +165,7 @@ public class Bot extends Cell {
         Orientation direction = orientation.spin(value);
         int delta = reactAtAhead(direction);
         if (delta >= 4) {
-            color=Color.RED;
+            changeColor(true);
             Bot food = (Bot) Field.getAheadCell(row, column, direction);
             Field.setEmptyCell(food);
             if (food.isAlive)
@@ -198,29 +238,7 @@ public class Bot extends Cell {
         return true;
     }
 
-    /**
-     * Метод отпочковывает нового бота рядом, если возможно. Иначе - бот умирает.
-     */
-    private void gemmate() {
-        Cell[] cells = Field.getAdjacentCells(row, column);
-        cells = Arrays.stream(cells).filter(cell -> !(cell instanceof Bot)).toArray(Cell[]::new);
-        if (cells.length == 0) {
-            die();
-            return;
-        }
 
-        Random rand = new Random();
-        Cell cell = cells[rand.nextInt(cells.length)];
-        energy /= 2;
-        needToUpdate=true;
-        Bot child = new Bot(cell.row, cell.column, energy, genome);
-        Field.setCell(child);
-
-        var bots = Field.getBots();
-        int index = bots.indexOf(this) - 1;
-        index = Math.max(index, 0);
-        bots.add(index, child);
-    }
 
     /**
      * Метод выполняет ход бота, если он жив.
@@ -251,7 +269,7 @@ public class Bot extends Cell {
             };
         }
         if(energy<=0) {
-            energy=20;
+            energy=5*8;
             die();
         }
     }

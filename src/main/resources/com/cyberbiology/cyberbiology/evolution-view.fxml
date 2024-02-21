@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.canvas.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="393.0" prefWidth="498.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.EvolutionController">
+    <columnConstraints>
+        <ColumnConstraints hgrow="ALWAYS" maxWidth="Infinity" minWidth="10.0" prefWidth="451.0" />
+        <ColumnConstraints hgrow="NEVER" maxWidth="150.0" minWidth="150.0" prefWidth="150.0" />
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+    </rowConstraints>
+    <ScrollPane fx:id="scrollPane" hbarPolicy="NEVER" pannable="true" vbarPolicy="NEVER" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+        <BorderPane style="-fx-border-color: black; -fx-border-width: 3;">
+            <center>
+                <Canvas fx:id="canvas" height="200.0" onMouseClicked="#onCanvasClicked" width="200.0" />
+            </center>
+        </BorderPane>
+    </ScrollPane>
+    <VBox alignment="TOP_CENTER" spacing="10.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="TOP">
+        <GridPane.margin>
+            <Insets />
+        </GridPane.margin>
+        <opaqueInsets>
+            <Insets />
+        </opaqueInsets>
+        <padding>
+            <Insets top="10.0" />
+        </padding>
+        <Button fx:id="clearButton" mnemonicParsing="false" onAction="#onClearClick" text="Clear" />
+        <Button fx:id="initButton" alignment="CENTER" mnemonicParsing="false" onAction="#onInitClick" text="Init" />
+        <Button fx:id="startButton" alignment="CENTER" mnemonicParsing="false" onAction="#OnStartClick" text="Start" />
+        <Button fx:id="stopButton" alignment="CENTER" disable="true" mnemonicParsing="false" onAction="#onStopClick" text="Stop" />
+      <Label fx:id="delayLabel" text="Задержка: " />
+      <Slider fx:id="slider" max="1000.0" min="20.0" onScroll="#onScroll" value="20.0">
+         <padding>
+            <Insets left="10.0" right="10.0" />
+         </padding>
+      </Slider>
+      <Label fx:id="iterationLabel" text="iter:" />
+    </VBox>
+</GridPane>
